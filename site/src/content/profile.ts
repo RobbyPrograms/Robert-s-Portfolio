@@ -8,7 +8,7 @@ export const profile = {
   phone: "(720) 256-3883",
   clearance: "Active Secret (DoD)",
   summary:
-    "DevSecOps Engineer with 3 years on a DoD program delivering CI/CD automation, release management, and pipeline infrastructure for 60+ developers. YAML pipeline authoring, containerized runners, Kubernetes targeting, and cross-environment coordination — with CompTIA Security+ and a foundation in secure software delivery.",
+    "I am a DevOps Engineer at Deloitte focused on automation, cloud infrastructure, and reliable delivery. Day to day, I build and improve CI/CD pipelines, streamline deployments, and keep systems stable for enterprise and government teams. I have hands-on experience with Azure DevOps, JavaScript, TypeScript, Python, C++, Java, and YAML, and I enjoy turning complex release work into repeatable, scalable workflows.",
   education: {
     degree: "B.S. Applied Computing Technology",
     minor: "Minor in Computing Technology",
@@ -26,8 +26,9 @@ export const profile = {
       highlights: [
         "Engineered and maintained 20+ YAML CI/CD pipelines with automated testing, quality gates, security checkpoints, and rollback strategies for a 60+ developer program.",
         "Configured Kubernetes-based self-hosted runner pools with node selector demands; authored custom Dockerfiles for agent tooling.",
-        "Managed 10+ releases/week — twice-daily lower-environment deployments and biweekly production releases.",
+        "Managed 10+ releases/week twice-daily lower-environment deployments and biweekly production releases.",
         "Developed Azure DevOps REST API automation to migrate 10,000+ work items across org domains for a secure transition.",
+        "Built an internal web app that surfaced Azure DevOps engineering metrics and DORA indicators in one dashboard, giving teams faster visibility into delivery health and bottlenecks.",
         "Release Manager for Salesforce initiatives across dev/test/prod with automated post-deploy validation.",
         "Built real-time Azure DevOps dashboards for deployment health, build success, and sprint metrics.",
         "Authored onboarding documentation, reducing new-hire ramp-up by ~50%.",

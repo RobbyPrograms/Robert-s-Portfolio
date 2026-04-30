@@ -4,6 +4,42 @@ import { projects } from "@/content/projects";
 import { motion } from "framer-motion";
 import { ArrowUpRight, ExternalLink } from "lucide-react";
 
+const variantStyles = {
+  sports: {
+    cardGlow:
+      "linear-gradient(135deg, rgba(249,115,22,0.07) 0%, transparent 40%, rgba(34,211,238,0.08) 55%, rgba(232,121,249,0.06) 100%)",
+    borderGlow:
+      "linear-gradient(125deg, rgba(34,211,238,0.45), rgba(249,115,22,0.25), rgba(232,121,249,0.35))",
+    previewBg:
+      "radial-gradient(ellipse at 30% 20%, rgba(249,115,22,0.35), transparent 55%), radial-gradient(ellipse at 80% 80%, rgba(34,211,238,0.25), transparent 50%), linear-gradient(180deg, #0c0c10 0%, #050508 100%)",
+    eyebrowText: "text-orange-300/90",
+    ctaClass:
+      "bg-gradient-to-r from-cyan-400 via-cyan-300 to-orange-400 text-[#0a0a0c] shadow-[0_0_32px_rgba(34,211,238,0.4)] hover:shadow-[0_0_44px_rgba(34,211,238,0.55)]",
+  },
+  tech: {
+    cardGlow:
+      "linear-gradient(135deg, rgba(167,139,250,0.08) 0%, transparent 40%, rgba(34,211,238,0.08) 55%, rgba(232,121,249,0.06) 100%)",
+    borderGlow:
+      "linear-gradient(125deg, rgba(167,139,250,0.4), rgba(34,211,238,0.3), rgba(232,121,249,0.35))",
+    previewBg:
+      "radial-gradient(ellipse at 30% 20%, rgba(167,139,250,0.35), transparent 55%), radial-gradient(ellipse at 80% 80%, rgba(34,211,238,0.28), transparent 50%), linear-gradient(180deg, #0c0c12 0%, #050508 100%)",
+    eyebrowText: "text-violet-300/90",
+    ctaClass:
+      "bg-gradient-to-r from-violet-400 via-cyan-300 to-fuchsia-400 text-[#0a0a0c] shadow-[0_0_32px_rgba(167,139,250,0.38)] hover:shadow-[0_0_44px_rgba(167,139,250,0.5)]",
+  },
+  api: {
+    cardGlow:
+      "linear-gradient(135deg, rgba(20,184,166,0.1) 0%, transparent 40%, rgba(34,211,238,0.08) 55%, rgba(59,130,246,0.08) 100%)",
+    borderGlow:
+      "linear-gradient(125deg, rgba(20,184,166,0.4), rgba(34,211,238,0.35), rgba(59,130,246,0.35))",
+    previewBg:
+      "radial-gradient(ellipse at 30% 20%, rgba(20,184,166,0.34), transparent 55%), radial-gradient(ellipse at 80% 80%, rgba(59,130,246,0.28), transparent 50%), linear-gradient(180deg, #0b0f14 0%, #050508 100%)",
+    eyebrowText: "text-teal-300/90",
+    ctaClass:
+      "bg-gradient-to-r from-teal-400 via-cyan-300 to-blue-400 text-[#0a0a0c] shadow-[0_0_32px_rgba(20,184,166,0.4)] hover:shadow-[0_0_44px_rgba(59,130,246,0.45)]",
+  },
+} as const;
+
 export function ProjectsSection() {
   return (
     <section
@@ -23,17 +59,17 @@ export function ProjectsSection() {
             Projects
           </p>
           <h2 className="mt-4 bg-gradient-to-br from-white via-white to-cyan-100/70 bg-clip-text font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight text-transparent md:text-4xl lg:text-5xl">
-            Things I ship on the side
+            Projects I ship on the side
           </h2>
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-white/55 md:text-lg">
-            Personal builds that pair the same rigor as production work with
-            experimentation—APIs, ML, data, and polished product surfaces.
+            Side projects where I test new ideas, ship real features, and keep
+            the same engineering standards I bring to production work.
           </p>
         </motion.div>
 
         <ul className="space-y-10">
           {projects.map((project, i) => {
-            const isTech = project.preview.variant === "tech";
+            const styles = variantStyles[project.preview.variant];
             return (
               <motion.li
                 key={project.href}
@@ -50,17 +86,13 @@ export function ProjectsSection() {
                 <div
                   className="pointer-events-none absolute inset-0 opacity-90"
                   style={{
-                    background: isTech
-                      ? "linear-gradient(135deg, rgba(167,139,250,0.08) 0%, transparent 40%, rgba(34,211,238,0.08) 55%, rgba(232,121,249,0.06) 100%)"
-                      : "linear-gradient(135deg, rgba(249,115,22,0.07) 0%, transparent 40%, rgba(34,211,238,0.08) 55%, rgba(232,121,249,0.06) 100%)",
+                    background: styles.cardGlow,
                   }}
                 />
                 <div
                   className="pointer-events-none absolute -inset-px rounded-[inherit] opacity-55"
                   style={{
-                    background: isTech
-                      ? "linear-gradient(125deg, rgba(167,139,250,0.4), rgba(34,211,238,0.3), rgba(232,121,249,0.35))"
-                      : "linear-gradient(125deg, rgba(34,211,238,0.45), rgba(249,115,22,0.25), rgba(232,121,249,0.35))",
+                    background: styles.borderGlow,
                     mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
                     maskComposite: "exclude",
                     WebkitMaskComposite: "xor",
@@ -93,7 +125,7 @@ export function ProjectsSection() {
                       href={project.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="mt-8 inline-flex w-fit items-center gap-2 rounded-full bg-gradient-to-r from-cyan-400 via-cyan-300 to-orange-400 px-7 py-3.5 text-sm font-semibold text-[#0a0a0c] shadow-[0_0_32px_rgba(34,211,238,0.4)] transition-transform group-hover:scale-[1.02] hover:shadow-[0_0_44px_rgba(34,211,238,0.55)]"
+                      className={`mt-8 inline-flex w-fit items-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold transition-transform group-hover:scale-[1.02] ${styles.ctaClass}`}
                     >
                       Open live app
                       <ArrowUpRight className="h-4 w-4" aria-hidden />
@@ -124,19 +156,13 @@ export function ProjectsSection() {
                       <div
                         className="absolute inset-0"
                         style={{
-                          background: isTech
-                            ? "radial-gradient(ellipse at 30% 20%, rgba(167,139,250,0.35), transparent 55%), radial-gradient(ellipse at 80% 80%, rgba(34,211,238,0.28), transparent 50%), linear-gradient(180deg, #0c0c12 0%, #050508 100%)"
-                            : "radial-gradient(ellipse at 30% 20%, rgba(249,115,22,0.35), transparent 55%), radial-gradient(ellipse at 80% 80%, rgba(34,211,238,0.25), transparent 50%), linear-gradient(180deg, #0c0c10 0%, #050508 100%)",
+                          background: styles.previewBg,
                         }}
                       />
                       <div className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent_0%,rgba(0,0,0,0.5)_100%)]" />
                       <div className="relative flex h-full flex-col items-center justify-center p-6 text-center">
                         <p
-                          className={
-                            isTech
-                              ? "text-xs font-semibold uppercase tracking-[0.35em] text-violet-300/90"
-                              : "text-xs font-semibold uppercase tracking-[0.35em] text-orange-300/90"
-                        }
+                          className={`text-xs font-semibold uppercase tracking-[0.35em] ${styles.eyebrowText}`}
                         >
                           {project.preview.eyebrow}
                         </p>
