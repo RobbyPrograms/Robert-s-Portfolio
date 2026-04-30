@@ -1,4 +1,5 @@
 import { DocumentTitle } from "@/components/document-title";
+import { Analytics } from "@vercel/analytics/react";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import "./globals.css";
@@ -47,6 +48,7 @@ export default function RootLayout({
       <body className="min-h-full overflow-x-hidden bg-[#050508] text-[#f4f4f8] antialiased">
         <DocumentTitle />
         {children}
+        <Analytics />
       </body>
     </html>
   );
