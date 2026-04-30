@@ -1,5 +1,6 @@
 "use client";
 
+import { shouldUseLightweightMotion } from "@/lib/mobile-performance";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
@@ -13,14 +14,15 @@ export function SmoothScrollProvider({
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // Native momentum scroll is smoother than Lenis + ScrollTrigger on touch devices.
+    if (shouldUseLightweightMotion()) return;
 
     gsap.registerPlugin(ScrollTrigger);
 
     const lenis = new Lenis({
       lerp: 0.085,
       smoothWheel: true,
-      syncTouch: true,
-      touchMultiplier: 1.1,
+      syncTouch: false,
       wheelMultiplier: 0.9,
       anchors: true,
     });

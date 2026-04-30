@@ -5,6 +5,7 @@ import { GradientText } from "@/components/ui/gradient-text";
 import { GridPattern } from "@/components/ui/grid-pattern";
 import { Spotlight } from "@/components/ui/spotlight";
 import { profile } from "@/content/profile";
+import { shouldUseLightweightMotion } from "@/lib/mobile-performance";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { motion, useReducedMotion } from "framer-motion";
@@ -19,6 +20,9 @@ export function HeroSection() {
 
   useLayoutEffect(() => {
     if (reduceMotion) return;
+    // Pinned hero + blur scrub tanks mobile compositors; keep native scroll path.
+    if (shouldUseLightweightMotion()) return;
+
     gsap.registerPlugin(ScrollTrigger);
     const section = sectionRef.current;
     const layer = layerRef.current;
@@ -52,18 +56,21 @@ export function HeroSection() {
     >
       <div
         ref={layerRef}
-        className="relative flex min-h-[100svh] will-change-transform"
+        className="relative flex min-h-[100svh] md:will-change-transform"
       >
         <AuroraBackground className="flex min-h-[100svh] flex-1 flex-col">
           <div className="pointer-events-none absolute inset-0 z-0">
             <GridPattern />
-            <Spotlight />
+            {/* Spotlight = extra full-screen blur work on small GPUs */}
+            <div className="hidden md:block">
+              <Spotlight />
+            </div>
           </div>
           <div
             className="relative z-10 flex min-h-[100svh] flex-1 flex-col justify-center px-4 pb-[max(1.75rem,env(safe-area-inset-bottom))] pt-[calc(5.25rem+env(safe-area-inset-top))] sm:px-8 md:px-12 lg:px-16"
           >
             <div className="mx-auto w-full max-w-5xl">
-              <div className="relative overflow-hidden rounded-2xl border border-cyan-400/25 bg-white/[0.05] p-6 shadow-[0_0_80px_-20px_rgba(34,211,238,0.5),0_25px_80px_-30px_rgba(232,121,249,0.25)] backdrop-blur-2xl sm:rounded-3xl sm:p-8 md:p-10">
+              <div className="relative overflow-hidden rounded-2xl border border-cyan-400/25 bg-white/[0.05] p-6 shadow-[0_0_80px_-20px_rgba(34,211,238,0.5),0_25px_80px_-30px_rgba(232,121,249,0.25)] backdrop-blur-md sm:rounded-3xl sm:p-8 md:backdrop-blur-2xl md:p-10">
                 <div
                   className="pointer-events-none absolute inset-0 rounded-[inherit] opacity-90"
                   style={{
@@ -72,7 +79,7 @@ export function HeroSection() {
                   }}
                 />
                 <div
-                  className="pointer-events-none absolute -inset-px rounded-[inherit] opacity-70"
+                  className="pointer-events-none absolute -inset-px rounded-[inherit] opacity-70 max-md:opacity-50"
                   style={{
                     background:
                       "linear-gradient(135deg, rgba(34,211,238,0.45), rgba(232,121,249,0.25), rgba(167,139,250,0.35))",
@@ -146,7 +153,7 @@ export function HeroSection() {
                     </Link>
                     <Link
                       href="#contact"
-                      className="inline-flex min-h-[48px] items-center justify-center rounded-full border border-cyan-400/35 bg-white/[0.06] px-8 py-3.5 text-sm font-medium text-cyan-50 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md transition-colors hover:border-fuchsia-400/45 hover:bg-white/[0.1] hover:text-white"
+                      className="inline-flex min-h-[48px] items-center justify-center rounded-full border border-cyan-400/35 bg-white/[0.06] px-8 py-3.5 text-sm font-medium text-cyan-50 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-sm transition-colors hover:border-fuchsia-400/45 hover:bg-white/[0.1] hover:text-white md:backdrop-blur-md"
                     >
                       Get in touch
                     </Link>
@@ -164,6 +171,7 @@ export function HeroSection() {
                     >
                       <span>Scroll</span>
                       <motion.span
+                        className="max-md:hidden"
                         animate={{ y: [0, 5, 0] }}
                         transition={{
                           duration: 2,
@@ -173,6 +181,9 @@ export function HeroSection() {
                       >
                         <ArrowDown className="h-4 w-4 sm:h-5 sm:w-5" />
                       </motion.span>
+                      <span className="md:hidden" aria-hidden>
+                        <ArrowDown className="h-4 w-4 sm:h-5 sm:w-5" />
+                      </span>
                     </Link>
                   </motion.div>
                 </div>

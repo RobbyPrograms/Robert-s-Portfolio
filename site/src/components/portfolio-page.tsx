@@ -9,6 +9,7 @@ import { ProjectsSection } from "@/components/sections/projects-section";
 import { SkillsSection } from "@/components/sections/skills-section";
 import { SiteFooter } from "@/components/site-footer";
 import { SmoothScrollProvider } from "@/components/smooth-scroll-provider";
+import { shouldUseLightweightMotion } from "@/lib/mobile-performance";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLayoutEffect, useRef } from "react";
@@ -19,6 +20,7 @@ export function PortfolioPage() {
   useLayoutEffect(() => {
     if (typeof window === "undefined") return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (shouldUseLightweightMotion()) return;
 
     gsap.registerPlugin(ScrollTrigger);
     const el = bridgeRef.current;
