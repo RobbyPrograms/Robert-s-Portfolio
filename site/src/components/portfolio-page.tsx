@@ -8,7 +8,7 @@ import { HeroSection } from "@/components/sections/hero-section";
 import { ProjectsSection } from "@/components/sections/projects-section";
 import { SkillsSection } from "@/components/sections/skills-section";
 import { SiteFooter } from "@/components/site-footer";
-import { SmoothScrollProvider } from "@/components/smooth-scroll-provider";
+import { SmoothScrollProvider } from "@/components/scroll-control";
 import { shouldUseLightweightMotion } from "@/lib/mobile-performance";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";

@@ -56,6 +56,7 @@ export function HeroSection() {
     >
       <div
         ref={layerRef}
+        data-hero-scroll-layer
         className="relative flex min-h-[100svh] md:will-change-transform"
       >
         <AuroraBackground className="flex min-h-[100svh] flex-1 flex-col">
