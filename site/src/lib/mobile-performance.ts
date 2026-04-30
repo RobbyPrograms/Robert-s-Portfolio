@@ -25,10 +25,12 @@ export function shouldUseLightweightMotion(): boolean {
   const memory = (navigator as NavWithMemory).deviceMemory ?? 8;
   const lowMemory = memory <= 4;
 
-  type ConnectionWithSaveData = { saveData?: boolean };
+  type NavWithConnection = Navigator & {
+    connection?: { saveData?: boolean };
+  };
   const conn =
     typeof navigator !== "undefined"
-      ? (navigator.connection as ConnectionWithSaveData | undefined)
+      ? (navigator as NavWithConnection).connection
       : undefined;
   const saveData = Boolean(conn?.saveData);
 
