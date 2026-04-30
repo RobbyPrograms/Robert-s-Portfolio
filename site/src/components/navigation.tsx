@@ -4,17 +4,94 @@ import { useScrollToTop } from "@/components/scroll-control";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
+
+const SECTION_IDS = [
+  "top",
+  "about",
+  "experience",
+  "skills",
+  "projects",
+  "contact",
+] as const;
 
 const links = [
-  { href: "#about", label: "About" },
-  { href: "#experience", label: "Experience" },
-  { href: "#skills", label: "Skills" },
-  { href: "#projects", label: "Projects" },
-  { href: "#contact", label: "Contact" },
+  { id: "about" as const, href: "#about", label: "About" },
+  { id: "experience" as const, href: "#experience", label: "Experience" },
+  { id: "skills" as const, href: "#skills", label: "Skills" },
+  { id: "projects" as const, href: "#projects", label: "Projects" },
+  { id: "contact" as const, href: "#contact", label: "Contact" },
 ];
+
+const activeBubble =
+  "bg-cyan-400/20 text-cyan-100 shadow-[0_0_20px_rgba(34,211,238,0.35)] ring-1 ring-cyan-400/35";
+
+const inactiveNav =
+  "text-white/65 hover:bg-cyan-400/10 hover:text-cyan-100";
 
 export function Navigation({ className }: { className?: string }) {
   const scrollToTop = useScrollToTop();
+  const [activeId, setActiveId] = useState<string>("top");
+
+  const computeActiveFromScroll = useCallback(() => {
+    if (typeof window === "undefined") return;
+    const line = window.innerHeight * 0.28 + 56;
+    let active = "top";
+    for (const id of SECTION_IDS) {
+      const el = document.getElementById(id);
+      if (!el) continue;
+      if (el.getBoundingClientRect().top <= line) {
+        active = id;
+      }
+    }
+    setActiveId(active);
+  }, []);
+
+  useEffect(() => {
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        ticking = false;
+        computeActiveFromScroll();
+      });
+    };
+
+    computeActiveFromScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [computeActiveFromScroll]);
+
+  useEffect(() => {
+    const fromHash = () => {
+      const raw = window.location.hash.replace(/^#/, "");
+      if (raw === "" || raw === "top") setActiveId("top");
+      else if (SECTION_IDS.includes(raw as (typeof SECTION_IDS)[number])) {
+        setActiveId(raw);
+      }
+    };
+    fromHash();
+    window.addEventListener("hashchange", fromHash);
+    const onClick = (e: MouseEvent) => {
+      const a = (e.target as HTMLElement | null)?.closest?.("a[href^='#']");
+      if (!(a instanceof HTMLAnchorElement)) return;
+      const id = a.getAttribute("href")?.replace(/^#/, "");
+      if (id === "top" || id === "") setActiveId("top");
+      else if (id && SECTION_IDS.includes(id as (typeof SECTION_IDS)[number])) {
+        setActiveId(id);
+      }
+    };
+    document.addEventListener("click", onClick, true);
+    return () => {
+      window.removeEventListener("hashchange", fromHash);
+      document.removeEventListener("click", onClick, true);
+    };
+  }, []);
 
   return (
     <motion.header
@@ -32,9 +109,16 @@ export function Navigation({ className }: { className?: string }) {
       >
         <button
           type="button"
-          onClick={() => scrollToTop()}
+          onClick={() => {
+            scrollToTop();
+            setActiveId("top");
+          }}
           aria-label="Back to top"
-          className="shrink-0 rounded-full px-3 py-2 text-xs font-semibold tracking-tight text-white shadow-[0_0_20px_rgba(34,211,238,0.25)] sm:mr-1 sm:px-4 sm:text-sm"
+          aria-current={activeId === "top" ? "page" : undefined}
+          className={cn(
+            "shrink-0 rounded-full px-3 py-2 text-xs font-semibold tracking-tight transition-colors sm:mr-1 sm:px-4 sm:text-sm",
+            activeId === "top" ? activeBubble : inactiveNav,
+          )}
         >
           RR
         </button>
@@ -42,7 +126,11 @@ export function Navigation({ className }: { className?: string }) {
           <Link
             key={l.href}
             href={l.href}
-            className="shrink-0 rounded-full px-3 py-2 text-xs text-white/65 transition-colors hover:bg-cyan-400/10 hover:text-cyan-100 sm:px-4 sm:text-sm"
+            aria-current={activeId === l.id ? "page" : undefined}
+            className={cn(
+              "shrink-0 rounded-full px-3 py-2 text-xs transition-colors sm:px-4 sm:text-sm",
+              activeId === l.id ? activeBubble : inactiveNav,
+            )}
           >
             {l.label}
           </Link>

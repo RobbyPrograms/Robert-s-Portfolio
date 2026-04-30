@@ -66,7 +66,7 @@ export const profile = {
     },
     {
       title: "Cloud & Platforms",
-      items: ["Microsoft Azure", "Salesforce", "ServiceNow"],
+      items: ["Microsoft Azure", "Salesforce", "ServiceNow", "AWS", "GitHub"]
     },
     {
       title: "Security & Practices",

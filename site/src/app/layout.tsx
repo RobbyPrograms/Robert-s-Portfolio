@@ -1,3 +1,4 @@
+import { DocumentTitle } from "@/components/document-title";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import "./globals.css";
@@ -19,7 +20,10 @@ const instrumentSerif = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  title: "Robert Rolison · DevSecOps Engineer",
+  title: {
+    default: "Robert Rolison · DevSecOps Engineer",
+    template: "%s · Robert Rolison",
+  },
   description:
     "DevSecOps Engineer — CI/CD, Azure DevOps, Kubernetes runners, and secure delivery for DoD programs.",
   openGraph: {
@@ -41,6 +45,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable} h-full scroll-smooth antialiased`}
     >
       <body className="min-h-full overflow-x-hidden bg-[#050508] text-[#f4f4f8] antialiased">
+        <DocumentTitle />
         {children}
       </body>
     </html>
