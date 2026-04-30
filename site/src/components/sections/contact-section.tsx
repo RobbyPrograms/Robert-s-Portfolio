@@ -9,42 +9,65 @@ export function ContactSection() {
   return (
     <section
       id="contact"
-      className="relative overflow-hidden bg-[#080706] px-6 py-28 md:px-12 lg:px-16"
+      className="relative overflow-hidden bg-[#050508] px-6 py-28 md:px-12 lg:px-16"
     >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_100%,rgba(232,180,184,0.12),transparent)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_90%_60%_at_50%_100%,rgba(34,211,238,0.12),transparent_55%),radial-gradient(ellipse_60%_40%_at_80%_90%,rgba(232,121,249,0.08),transparent_50%)]" />
       <div className="relative mx-auto max-w-5xl">
         <motion.div
           initial={{ opacity: 0, y: 28 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="rounded-3xl border border-white/[0.1] bg-white/[0.03] p-10 text-center shadow-[0_32px_120px_rgba(0,0,0,0.45)] backdrop-blur-md md:p-16"
+          className="relative overflow-hidden rounded-3xl border border-cyan-400/25 bg-white/[0.04] p-10 text-center shadow-[0_0_80px_-25px_rgba(34,211,238,0.35),0_32px_100px_rgba(0,0,0,0.5)] backdrop-blur-2xl md:rounded-[2rem] md:p-16"
         >
-          <p className="text-sm font-medium uppercase tracking-[0.35em] text-white/45">
-            Contact
-          </p>
-          <h2 className="mt-6 font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight text-white md:text-5xl">
-            Let&apos;s build reliable releases
-          </h2>
-          <p className="mx-auto mt-6 max-w-xl text-lg text-white/55">
-            Open to conversations about DevSecOps, secure CI/CD, and
-            mission-driven engineering.
-          </p>
-          <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-8">
-            <Link
-              href={`mailto:${profile.email}`}
-              className="inline-flex items-center gap-3 rounded-full bg-white px-8 py-4 text-sm font-semibold text-[#1a1816] transition-transform hover:scale-[1.02]"
-            >
-              <Mail className="h-4 w-4" aria-hidden />
-              {profile.email}
-            </Link>
-            <a
-              href={`tel:${profile.phone.replace(/\D/g, "")}`}
-              className="inline-flex items-center gap-3 text-sm font-medium text-white/70 transition-colors hover:text-white"
-            >
-              <Phone className="h-4 w-4" aria-hidden />
-              {profile.phone}
-            </a>
+          <div
+            className="pointer-events-none absolute inset-0 rounded-[inherit] opacity-90"
+            style={{
+              background:
+                "linear-gradient(165deg, rgba(34,211,238,0.1) 0%, transparent 42%, rgba(232,121,249,0.08) 100%)",
+            }}
+          />
+          <div
+            className="pointer-events-none absolute -inset-px rounded-[inherit] opacity-60"
+            style={{
+              background:
+                "linear-gradient(135deg, rgba(34,211,238,0.4), rgba(232,121,249,0.25), rgba(167,139,250,0.35))",
+              mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+              maskComposite: "exclude",
+              WebkitMaskComposite: "xor",
+              padding: 1,
+            }}
+          />
+          <div className="relative z-10">
+            <p className="text-sm font-medium uppercase tracking-[0.35em] text-cyan-300/85">
+              Contact
+            </p>
+            <h2 className="mt-6 bg-gradient-to-br from-white via-white to-cyan-100/75 bg-clip-text font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight text-transparent md:text-5xl">
+              Let&apos;s build reliable releases
+            </h2>
+            <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-white/65">
+              Open to conversations about DevSecOps, secure CI/CD, and
+              mission-driven engineering.
+            </p>
+            <div className="mt-12 flex flex-col items-center justify-center gap-5 sm:flex-row sm:gap-8">
+              <Link
+                href={`mailto:${profile.email}`}
+                className="inline-flex min-h-[52px] w-full max-w-md items-center justify-center gap-3 rounded-full bg-gradient-to-r from-cyan-400 via-cyan-300 to-fuchsia-400 px-8 py-4 text-sm font-semibold text-[#0a0a0c] shadow-[0_0_36px_rgba(34,211,238,0.45)] transition-transform hover:scale-[1.02] hover:shadow-[0_0_48px_rgba(34,211,238,0.55)] sm:w-auto"
+              >
+                <Mail className="h-4 w-4 shrink-0" aria-hidden />
+                <span className="truncate">{profile.email}</span>
+              </Link>
+              <a
+                href={`tel:${profile.phone.replace(/\D/g, "")}`}
+                className="inline-flex min-h-[52px] items-center justify-center gap-3 rounded-full border border-cyan-400/35 bg-white/[0.06] px-8 py-4 text-sm font-medium text-cyan-50 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-md transition-colors hover:border-fuchsia-400/40 hover:bg-white/[0.1] hover:text-white"
+              >
+                <Phone
+                  className="h-4 w-4 shrink-0 text-cyan-300 drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]"
+                  aria-hidden
+                />
+                {profile.phone}
+              </a>
+            </div>
           </div>
         </motion.div>
       </div>
