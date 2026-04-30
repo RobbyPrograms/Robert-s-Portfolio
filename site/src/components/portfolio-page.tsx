@@ -9,18 +9,30 @@ import { ProjectsSection } from "@/components/sections/projects-section";
 import { SkillsSection } from "@/components/sections/skills-section";
 import { SiteFooter } from "@/components/site-footer";
 import { SmoothScrollProvider } from "@/components/scroll-control";
-import { shouldUseLightweightMotion } from "@/lib/mobile-performance";
+import {
+  shouldUseLightweightMotion,
+  useLightweightMotion,
+} from "@/lib/mobile-performance";
+import { MotionConfig } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useLayoutEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function PortfolioPage() {
   const bridgeRef = useRef<HTMLDivElement>(null);
+  const [effectsReady, setEffectsReady] = useState(false);
+  const lightweightMotion = useLightweightMotion();
 
-  useLayoutEffect(() => {
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setEffectsReady(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  useEffect(() => {
     if (typeof window === "undefined") return;
+    if (!effectsReady) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    if (shouldUseLightweightMotion()) return;
+    if (lightweightMotion || shouldUseLightweightMotion()) return;
 
     gsap.registerPlugin(ScrollTrigger);
     const el = bridgeRef.current;
@@ -45,20 +57,22 @@ export function PortfolioPage() {
     });
 
     return () => ctx.revert();
-  }, []);
+  }, [effectsReady, lightweightMotion]);
 
   return (
-    <SmoothScrollProvider>
-      <Navigation />
-      <HeroSection />
-      <div ref={bridgeRef} className="relative bg-[#060508]">
-        <AboutSection />
-        <ExperienceSection />
-        <SkillsSection />
-        <ProjectsSection />
-        <ContactSection />
-        <SiteFooter />
-      </div>
-    </SmoothScrollProvider>
+    <MotionConfig reducedMotion={lightweightMotion ? "always" : "never"}>
+      <SmoothScrollProvider>
+        <Navigation />
+        <HeroSection />
+        <div ref={bridgeRef} className="relative bg-[#060508]">
+          <AboutSection />
+          <ExperienceSection />
+          <SkillsSection />
+          <ProjectsSection />
+          <ContactSection />
+          <SiteFooter />
+        </div>
+      </SmoothScrollProvider>
+    </MotionConfig>
   );
 }

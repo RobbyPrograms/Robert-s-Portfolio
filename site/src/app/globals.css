@@ -69,3 +69,31 @@ body {
     animation: none !important;
   }
 }
+
+html.perf-lite .border-beam-motion {
+  animation: none !important;
+  display: none !important;
+}
+
+html.perf-lite .backdrop-blur-2xl {
+  backdrop-filter: blur(10px) !important;
+}
+
+html.perf-lite .backdrop-blur-xl {
+  backdrop-filter: blur(8px) !important;
+}
+
+html.perf-lite .backdrop-blur-md {
+  backdrop-filter: blur(6px) !important;
+}
+
+html.perf-lite *,
+html.perf-lite *::before,
+html.perf-lite *::after {
+  animation: none !important;
+  transition: none !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
