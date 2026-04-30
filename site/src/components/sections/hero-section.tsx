@@ -3,33 +3,25 @@
 import { AuroraBackground } from "@/components/ui/aurora-background";
 import { GradientText } from "@/components/ui/gradient-text";
 import { GridPattern } from "@/components/ui/grid-pattern";
+import { Spotlight } from "@/components/ui/spotlight";
 import { profile } from "@/content/profile";
-import { useLightweightMotion } from "@/lib/mobile-performance";
-import { cn } from "@/lib/utils";
+import { shouldUseLightweightMotion } from "@/lib/mobile-performance";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowDown } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef } from "react";
 
 export function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const layerRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
-  const lightweightMotion = useLightweightMotion();
-  const [introReady, setIntroReady] = useState(false);
 
-  useEffect(() => {
-    const id = requestAnimationFrame(() => setIntroReady(true));
-    return () => cancelAnimationFrame(id);
-  }, []);
-
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (reduceMotion) return;
-    // Pinned hero + blur scrub can tank weaker compositors; keep native scroll there.
-    if (lightweightMotion) return;
-    if (!introReady) return;
+    // Pinned hero + blur scrub tanks mobile compositors; keep native scroll path.
+    if (shouldUseLightweightMotion()) return;
 
     gsap.registerPlugin(ScrollTrigger);
     const section = sectionRef.current;
@@ -41,18 +33,20 @@ export function HeroSection() {
         scrollTrigger: {
           trigger: section,
           start: "top top",
-          end: "bottom top",
+          end: "+=110%",
           scrub: 1.05,
+          pin: true,
         },
-        yPercent: -5,
-        opacity: 0.85,
-        scale: 0.985,
+        yPercent: -8,
+        opacity: 0,
+        scale: 0.97,
+        filter: "blur(5px)",
         ease: "none",
       });
     }, section);
 
     return () => ctx.revert();
-  }, [introReady, lightweightMotion, reduceMotion]);
+  }, [reduceMotion]);
 
   return (
     <section
@@ -68,17 +62,16 @@ export function HeroSection() {
         <AuroraBackground className="flex min-h-[100svh] flex-1 flex-col">
           <div className="pointer-events-none absolute inset-0 z-0">
             <GridPattern />
+            {/* Spotlight = extra full-screen blur work on small GPUs */}
+            <div className="hidden md:block">
+              <Spotlight />
+            </div>
           </div>
           <div
             className="relative z-10 flex min-h-[100svh] flex-1 flex-col justify-center px-4 pb-[max(1.75rem,env(safe-area-inset-bottom))] pt-[calc(5.25rem+env(safe-area-inset-top))] sm:px-8 md:px-12 lg:px-16"
           >
             <div className="mx-auto w-full max-w-5xl">
-              <div
-                className={cn(
-                  "relative overflow-hidden rounded-2xl border border-cyan-400/25 bg-white/[0.05] p-6 shadow-[0_0_80px_-20px_rgba(34,211,238,0.5),0_25px_80px_-30px_rgba(232,121,249,0.25)] sm:rounded-3xl sm:p-8 md:p-10",
-                  lightweightMotion ? "backdrop-blur-sm md:backdrop-blur-md" : "backdrop-blur-md md:backdrop-blur-2xl",
-                )}
-              >
+              <div className="relative overflow-hidden rounded-2xl border border-cyan-400/25 bg-white/[0.05] p-6 shadow-[0_0_80px_-20px_rgba(34,211,238,0.5),0_25px_80px_-30px_rgba(232,121,249,0.25)] backdrop-blur-md sm:rounded-3xl sm:p-8 md:backdrop-blur-2xl md:p-10">
                 <div
                   className="pointer-events-none absolute inset-0 rounded-[inherit] opacity-90"
                   style={{
@@ -100,9 +93,9 @@ export function HeroSection() {
                 <div className="relative">
                   <motion.p
                     className="mb-3 text-[11px] font-semibold uppercase tracking-[0.4em] text-cyan-200/80 sm:mb-4 sm:text-sm sm:tracking-[0.35em]"
-                    initial={false}
-                    animate={introReady ? { opacity: [1, 0.92, 1] } : undefined}
-                    transition={{ duration: 0.9, ease: "easeOut" }}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.65, delay: 0.08 }}
                   >
                     Portfolio
                   </motion.p>
@@ -114,11 +107,11 @@ export function HeroSection() {
                       >
                         <motion.span
                           className="inline-block"
-                          initial={false}
-                          animate={introReady ? { y: [2, 0], opacity: [0.9, 1] } : undefined}
+                          initial={{ y: "110%" }}
+                          animate={{ y: 0 }}
                           transition={{
-                            duration: 0.55,
-                            delay: 0.06 + i * 0.04,
+                            duration: 0.9,
+                            delay: 0.12 + i * 0.05,
                             ease: [0.22, 1, 0.36, 1],
                           }}
                         >
@@ -130,11 +123,11 @@ export function HeroSection() {
                   </h1>
                   <motion.div
                     className="mt-5 max-w-2xl sm:mt-6"
-                    initial={false}
-                    animate={introReady ? { y: [6, 0], opacity: [0.92, 1] } : undefined}
+                    initial={{ opacity: 0, y: 18 }}
+                    animate={{ opacity: 1, y: 0 }}
                     transition={{
-                      duration: 0.55,
-                      delay: 0.2,
+                      duration: 0.75,
+                      delay: 0.38,
                       ease: [0.22, 1, 0.36, 1],
                     }}
                   >
@@ -149,9 +142,9 @@ export function HeroSection() {
                   </motion.div>
                   <motion.div
                     className="mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4"
-                    initial={false}
-                    animate={introReady ? { y: [6, 0], opacity: [0.94, 1] } : undefined}
-                    transition={{ duration: 0.5, delay: 0.28 }}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.65, delay: 0.55 }}
                   >
                     <Link
                       href="#experience"
@@ -168,9 +161,9 @@ export function HeroSection() {
                   </motion.div>
                   <motion.div
                     className="mt-8 flex justify-center sm:mt-10 sm:justify-start"
-                    initial={false}
-                    animate={introReady ? { opacity: [0.92, 1] } : undefined}
-                    transition={{ delay: 0.34, duration: 0.45 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.95, duration: 0.5 }}
                   >
                     <Link
                       href="#about"
@@ -180,7 +173,7 @@ export function HeroSection() {
                       <span>Scroll</span>
                       <motion.span
                         className="max-md:hidden"
-                        animate={lightweightMotion ? undefined : { y: [0, 5, 0] }}
+                        animate={{ y: [0, 5, 0] }}
                         transition={{
                           duration: 2,
                           repeat: Infinity,

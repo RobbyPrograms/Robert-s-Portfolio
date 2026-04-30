@@ -1,7 +1,7 @@
 "use client";
 
 import { useScrollToTop } from "@/components/scroll-control";
-import { useLightweightMotion } from "@/lib/mobile-performance";
+import { shouldUseLightweightMotion } from "@/lib/mobile-performance";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -37,17 +37,17 @@ function viewportHeight(): number {
 
 export function Navigation({ className }: { className?: string }) {
   const scrollToTop = useScrollToTop();
-  const lightweightMotion = useLightweightMotion();
   const [activeId, setActiveId] = useState<string>("top");
   /** Prevents scroll-spy from overwriting the tab you just tapped while the page scrolls (esp. mobile). */
   const navLockRef = useRef<{ id: string; until: number } | null>(null);
   const rafRef = useRef<number>(0);
 
   const armNavLock = useCallback((id: string) => {
-    const ms = lightweightMotion ? 1400 : 900;
+    const isMobile = shouldUseLightweightMotion();
+    const ms = isMobile ? 1600 : 900;
     navLockRef.current = { id, until: Date.now() + ms };
     setActiveId(id);
-  }, [lightweightMotion]);
+  }, []);
 
   const computeActiveFromScroll = useCallback(() => {
     if (typeof window === "undefined") return;
@@ -152,10 +152,7 @@ export function Navigation({ className }: { className?: string }) {
       )}
     >
       <nav
-        className={cn(
-          "scrollbar-none flex max-w-[min(100%,42rem)] items-center gap-0.5 overflow-x-auto rounded-full border border-cyan-400/25 bg-white/[0.06] px-1.5 py-1.5 shadow-[0_0_40px_-8px_rgba(34,211,238,0.35),0_8px_32px_rgba(0,0,0,0.5)] sm:max-w-none sm:gap-1 sm:px-2 sm:py-2",
-          lightweightMotion ? "backdrop-blur-md" : "backdrop-blur-2xl",
-        )}
+        className="scrollbar-none flex max-w-[min(100%,42rem)] items-center gap-0.5 overflow-x-auto rounded-full border border-cyan-400/25 bg-white/[0.06] px-1.5 py-1.5 shadow-[0_0_40px_-8px_rgba(34,211,238,0.35),0_8px_32px_rgba(0,0,0,0.5)] backdrop-blur-2xl sm:max-w-none sm:gap-1 sm:px-2 sm:py-2"
         aria-label="Primary"
       >
         <button
