@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { useLightweightMotion } from "@/lib/mobile-performance";
 
 export function BorderBeam({
   className,
@@ -9,6 +10,9 @@ export function BorderBeam({
   className?: string;
   duration?: number;
 }) {
+  const lightweightMotion = useLightweightMotion();
+  if (lightweightMotion) return null;
+
   return (
     <div
       className={cn(
