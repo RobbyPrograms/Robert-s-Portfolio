@@ -26,7 +26,7 @@ export const projects = [
       eyebrow: "Protocols",
       displayName: "API Playground",
       tagline: "REST · real-time · GraphQL · gRPC · events",
-      variant: "tech" as const,
+      variant: "api" as const,
     },
   },
 ] as const;

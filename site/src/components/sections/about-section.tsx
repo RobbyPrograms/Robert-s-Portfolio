@@ -21,7 +21,7 @@ export function AboutSection() {
             About
           </p>
           <h2 className="mt-4 font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight text-white md:text-4xl lg:text-5xl">
-            Secure delivery at scale
+            Building reliable systems that ship fast
           </h2>
           <p className="mt-8 max-w-3xl text-lg leading-relaxed text-white/60 md:text-xl">
             {profile.summary}
@@ -51,7 +51,7 @@ export function AboutSection() {
                 Focus
               </dt>
               <dd className="mt-2 text-sm font-medium text-white/85">
-                CI/CD · Kubernetes runners · Release management
+                Automation · Cloud infrastructure · CI/CD reliability
               </dd>
             </div>
           </dl>

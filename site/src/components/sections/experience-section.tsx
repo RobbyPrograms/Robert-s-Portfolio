@@ -24,7 +24,7 @@ export function ExperienceSection() {
             Experience
           </p>
           <h2 className="mt-4 bg-gradient-to-br from-white via-white to-cyan-100/80 bg-clip-text font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight text-transparent md:text-4xl lg:text-5xl">
-            Where shipping meets security
+            What I have built at Deloitte
           </h2>
         </motion.div>
         <div className="space-y-10">

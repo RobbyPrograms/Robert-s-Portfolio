@@ -57,12 +57,16 @@ export function SkillsSection() {
               <h3 className="text-sm font-semibold uppercase tracking-wider text-white/90">
                 {g.title}
               </h3>
-              <ul className="mt-4 flex flex-wrap gap-2">
+              <ul className="mt-4 space-y-2">
                 {g.items.map((skill) => (
                   <li
                     key={skill}
-                    className="rounded-full border border-white/[0.08] bg-black/30 px-3 py-1 text-xs font-medium text-white/70"
+                    className="flex items-start gap-2 border-b border-white/[0.06] pb-2 text-sm text-white/75 last:border-b-0 last:pb-0"
                   >
+                    <span
+                      className="mt-[0.42rem] h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-300/70"
+                      aria-hidden
+                    />
                     {skill}
                   </li>
                 ))}
