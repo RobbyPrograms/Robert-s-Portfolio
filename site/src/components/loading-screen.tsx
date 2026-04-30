@@ -90,6 +90,19 @@ export function LoadingScreen({ onEnter }: LoadingScreenProps) {
         `,
           backgroundSize: "40px 40px",
           pointerEvents: "none",
+          animation: "gridDrift 16s linear infinite",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          pointerEvents: "none",
+          background:
+            "repeating-linear-gradient(to bottom, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 3px, transparent 6px)",
+          mixBlendMode: "screen",
+          opacity: showEnter ? 0.42 : 0.24,
+          animation: "scanlineShift 6s linear infinite",
         }}
       />
 
@@ -140,8 +153,22 @@ export function LoadingScreen({ onEnter }: LoadingScreenProps) {
           backdropFilter: "blur(14px)",
           maxWidth: 760,
           width: "min(92vw, 760px)",
+          animation: "floatCard 5.5s ease-in-out infinite",
+          position: "relative",
+          overflow: "hidden",
         }}
       >
+        <div
+          style={{
+            position: "absolute",
+            inset: "-35% -60%",
+            background:
+              "linear-gradient(115deg, transparent 40%, rgba(34,211,238,0.22) 50%, transparent 60%)",
+            transform: "translateX(-40%)",
+            animation: "sweepGlow 3.8s ease-in-out infinite",
+            pointerEvents: "none",
+          }}
+        />
         <div
           style={{
             fontFamily: "var(--font-geist-mono), 'Courier New', monospace",
@@ -166,6 +193,8 @@ export function LoadingScreen({ onEnter }: LoadingScreenProps) {
             lineHeight: 1,
             minHeight: "1.2em",
             textShadow: "0 2px 24px rgba(0,0,0,0.35)",
+            position: "relative",
+            animation: showEnter ? "titleSurge 2.2s ease-in-out infinite" : "none",
           }}
         >
           {displayed}
@@ -193,6 +222,7 @@ export function LoadingScreen({ onEnter }: LoadingScreenProps) {
             alignItems: "center",
             justifyContent: "center",
             gap: 12,
+            animation: showEnter ? "enterPulse 1.8s ease-in-out infinite" : "none",
           }}
         >
           <span style={{ color: "rgba(34,211,238,0.72)" }}>[</span>
@@ -217,6 +247,38 @@ export function LoadingScreen({ onEnter }: LoadingScreenProps) {
       </div>
 
       <style>{`
+        @keyframes gridDrift {
+          0% { transform: translate3d(0, 0, 0); }
+          100% { transform: translate3d(40px, 40px, 0); }
+        }
+
+        @keyframes floatCard {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-6px); }
+        }
+
+        @keyframes sweepGlow {
+          0% { transform: translateX(-44%) rotate(0.001deg); opacity: 0; }
+          16% { opacity: 0.9; }
+          42% { opacity: 0.18; }
+          100% { transform: translateX(44%) rotate(0.001deg); opacity: 0; }
+        }
+
+        @keyframes scanlineShift {
+          0% { transform: translateY(0); }
+          100% { transform: translateY(24px); }
+        }
+
+        @keyframes titleSurge {
+          0%, 100% { transform: translateY(0); text-shadow: 0 2px 24px rgba(0,0,0,0.35); }
+          50% { transform: translateY(-2px); text-shadow: 0 0 20px rgba(34,211,238,0.42), 0 2px 24px rgba(0,0,0,0.35); }
+        }
+
+        @keyframes enterPulse {
+          0%, 100% { opacity: 0.65; }
+          50% { opacity: 1; }
+        }
+
         @keyframes fadePulse {
           0%, 100% { opacity: 0.3; }
           50% { opacity: 0.8; }
