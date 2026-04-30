@@ -1,10 +1,11 @@
 "use client";
 
 import { useScrollToTop } from "@/components/scroll-control";
+import { shouldUseLightweightMotion } from "@/lib/mobile-performance";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const SECTION_IDS = [
   "top",
@@ -29,13 +30,36 @@ const activeBubble =
 const inactiveNav =
   "text-white/65 hover:bg-cyan-400/10 hover:text-cyan-100";
 
+function viewportHeight(): number {
+  if (typeof window === "undefined") return 800;
+  return window.visualViewport?.height ?? window.innerHeight;
+}
+
 export function Navigation({ className }: { className?: string }) {
   const scrollToTop = useScrollToTop();
   const [activeId, setActiveId] = useState<string>("top");
+  /** Prevents scroll-spy from overwriting the tab you just tapped while the page scrolls (esp. mobile). */
+  const navLockRef = useRef<{ id: string; until: number } | null>(null);
+  const rafRef = useRef<number>(0);
+
+  const armNavLock = useCallback((id: string) => {
+    const isMobile = shouldUseLightweightMotion();
+    const ms = isMobile ? 1600 : 900;
+    navLockRef.current = { id, until: Date.now() + ms };
+    setActiveId(id);
+  }, []);
 
   const computeActiveFromScroll = useCallback(() => {
     if (typeof window === "undefined") return;
-    const line = window.innerHeight * 0.28 + 56;
+
+    const lock = navLockRef.current;
+    if (lock && Date.now() < lock.until) {
+      setActiveId(lock.id);
+      return;
+    }
+    navLockRef.current = null;
+
+    const line = viewportHeight() * 0.26 + 64;
     let active = "top";
     for (const id of SECTION_IDS) {
       const el = document.getElementById(id);
@@ -48,50 +72,74 @@ export function Navigation({ className }: { className?: string }) {
   }, []);
 
   useEffect(() => {
-    let ticking = false;
-    const onScroll = () => {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(() => {
-        ticking = false;
+    const schedule = () => {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(() => {
         computeActiveFromScroll();
       });
     };
 
     computeActiveFromScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll, { passive: true });
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.visualViewport?.addEventListener("resize", schedule, {
+      passive: true,
+    });
+    window.addEventListener("resize", schedule, { passive: true });
+    window.addEventListener("scrollend", schedule, { passive: true });
+
     return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      cancelAnimationFrame(rafRef.current);
+      window.removeEventListener("scroll", schedule);
+      window.visualViewport?.removeEventListener("resize", schedule);
+      window.removeEventListener("resize", schedule);
+      window.removeEventListener("scrollend", schedule);
     };
   }, [computeActiveFromScroll]);
 
   useEffect(() => {
-    const fromHash = () => {
+    const applyHash = () => {
       const raw = window.location.hash.replace(/^#/, "");
-      if (raw === "" || raw === "top") setActiveId("top");
-      else if (SECTION_IDS.includes(raw as (typeof SECTION_IDS)[number])) {
-        setActiveId(raw);
+      if (raw === "" || raw === "top") {
+        armNavLock("top");
+      } else if (SECTION_IDS.includes(raw as (typeof SECTION_IDS)[number])) {
+        armNavLock(raw);
       }
     };
-    fromHash();
-    window.addEventListener("hashchange", fromHash);
+
+    applyHash();
+    window.addEventListener("hashchange", applyHash);
+
+    const hrefToId = (href: string | null) => {
+      if (!href?.startsWith("#")) return null;
+      const id = href.slice(1);
+      if (id === "" || id === "top") return "top";
+      if (SECTION_IDS.includes(id as (typeof SECTION_IDS)[number])) return id;
+      return null;
+    };
+
+    const onPointerDown = (e: PointerEvent) => {
+      const a = (e.target as HTMLElement | null)?.closest?.("a[href^='#']");
+      if (!(a instanceof HTMLAnchorElement)) return;
+      const id = hrefToId(a.getAttribute("href"));
+      if (id) armNavLock(id);
+    };
+
     const onClick = (e: MouseEvent) => {
       const a = (e.target as HTMLElement | null)?.closest?.("a[href^='#']");
       if (!(a instanceof HTMLAnchorElement)) return;
-      const id = a.getAttribute("href")?.replace(/^#/, "");
-      if (id === "top" || id === "") setActiveId("top");
-      else if (id && SECTION_IDS.includes(id as (typeof SECTION_IDS)[number])) {
-        setActiveId(id);
-      }
+      const id = hrefToId(a.getAttribute("href"));
+      if (id) armNavLock(id);
     };
+
+    document.addEventListener("pointerdown", onPointerDown, true);
     document.addEventListener("click", onClick, true);
+
     return () => {
-      window.removeEventListener("hashchange", fromHash);
+      window.removeEventListener("hashchange", applyHash);
+      document.removeEventListener("pointerdown", onPointerDown, true);
       document.removeEventListener("click", onClick, true);
     };
-  }, []);
+  }, [armNavLock]);
 
   return (
     <motion.header
@@ -109,9 +157,10 @@ export function Navigation({ className }: { className?: string }) {
       >
         <button
           type="button"
+          onPointerDown={() => armNavLock("top")}
           onClick={() => {
             scrollToTop();
-            setActiveId("top");
+            armNavLock("top");
           }}
           aria-label="Back to top"
           aria-current={activeId === "top" ? "page" : undefined}
