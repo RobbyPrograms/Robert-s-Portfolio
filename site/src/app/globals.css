@@ -38,6 +38,13 @@ body {
   overflow-x: hidden;
 }
 
+/* Background tab: pause CSS keyframe loops so Chrome/Safari don't hammer the compositor */
+html.tab-inactive *,
+html.tab-inactive *::before,
+html.tab-inactive *::after {
+  animation-play-state: paused !important;
+}
+
 .scrollbar-none {
   -ms-overflow-style: none;
   scrollbar-width: none;

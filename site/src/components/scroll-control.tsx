@@ -9,8 +9,10 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
+  useState,
 } from "react";
 
 const ScrollControlContext = createContext<{
@@ -44,7 +46,9 @@ export function SmoothScrollProvider({
   children: React.ReactNode;
 }) {
   const lenisRef = useRef<Lenis | null>(null);
-  const liteFxRef = useRef(false);
+  const tickRef = useRef<((time: number) => void) | null>(null);
+  const [effectiveLite, setEffectiveLite] = useState(false);
+  const [scrollMotionReady, setScrollMotionReady] = useState(false);
 
   const scrollToTop = useCallback(() => {
     if (typeof window === "undefined") return;
@@ -67,43 +71,49 @@ export function SmoothScrollProvider({
     window.setTimeout(finishScrollToTop, 900);
   }, []);
 
-  // Apply a global low-power class so CSS can cheapen expensive effects.
-  useEffect(() => {
+  // Lite mode + FPS probe finish before attaching Lenis (avoids stacking cost on weak GPUs).
+  useLayoutEffect(() => {
     if (typeof window === "undefined") return;
+
     const root = document.documentElement;
-    const applyLite = (enabled: boolean) => {
-      liteFxRef.current = enabled;
-      root.classList.toggle("lite-effects", enabled);
-    };
 
     if (shouldUseLiteEffects()) {
-      applyLite(true);
+      root.classList.add("lite-effects");
+      setEffectiveLite(true);
+      setScrollMotionReady(true);
       return;
     }
 
-    // Quick runtime sanity check for older desktops:
-    // if initial frame time is consistently poor, force lite mode.
+    root.classList.remove("lite-effects");
+
     let frames = 0;
-    let start = performance.now();
+    const start = performance.now();
     let raf = 0;
+
     const sample = (t: number) => {
       frames += 1;
-      if (frames < 45) {
+      if (frames < 24) {
         raf = requestAnimationFrame(sample);
         return;
       }
       const avgMs = (t - start) / frames;
-      // ~45 FPS or lower during initial motion -> use lite effects
-      applyLite(avgMs > 22);
+      if (avgMs > 22) {
+        root.classList.add("lite-effects");
+        setEffectiveLite(true);
+      }
+      setScrollMotionReady(true);
     };
+
     raf = requestAnimationFrame(sample);
+
     return () => cancelAnimationFrame(raf);
   }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    if (!scrollMotionReady) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    if (shouldUseLiteEffects() || liteFxRef.current) return;
+    if (effectiveLite) return;
 
     gsap.registerPlugin(ScrollTrigger);
 
@@ -123,6 +133,7 @@ export function SmoothScrollProvider({
     const onTick = (time: number) => {
       lenis.raf(time * 1000);
     };
+    tickRef.current = onTick;
     gsap.ticker.add(onTick);
     gsap.ticker.lagSmoothing(0);
 
@@ -131,10 +142,46 @@ export function SmoothScrollProvider({
     });
 
     return () => {
+      tickRef.current = null;
       lenisRef.current = null;
       gsap.ticker.remove(onTick);
       lenis.destroy();
       ScrollTrigger.refresh();
+    };
+  }, [scrollMotionReady, effectiveLite]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const onVis = () => {
+      const hidden = document.hidden;
+      document.documentElement.classList.toggle("tab-inactive", hidden);
+
+      const tick = tickRef.current;
+      const lenis = lenisRef.current;
+
+      if (hidden) {
+        if (tick) gsap.ticker.remove(tick);
+        lenis?.stop();
+        gsap.globalTimeline.pause();
+        return;
+      }
+
+      if (tick) gsap.ticker.add(tick);
+      lenis?.start();
+      gsap.globalTimeline.resume();
+      requestAnimationFrame(() => {
+        ScrollTrigger.refresh();
+      });
+    };
+
+    document.addEventListener("visibilitychange", onVis);
+    onVis();
+
+    return () => {
+      document.removeEventListener("visibilitychange", onVis);
+      document.documentElement.classList.remove("tab-inactive");
+      gsap.globalTimeline.resume();
     };
   }, []);
 
