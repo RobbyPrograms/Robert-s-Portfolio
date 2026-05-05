@@ -1,6 +1,6 @@
 "use client";
 
-import { shouldUseLightweightMotion } from "@/lib/mobile-performance";
+import { shouldUseLiteEffects } from "@/lib/mobile-performance";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
@@ -69,7 +69,7 @@ export function SmoothScrollProvider({
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    if (shouldUseLightweightMotion()) return;
+    if (shouldUseLiteEffects()) return;
 
     gsap.registerPlugin(ScrollTrigger);
 
