@@ -14,8 +14,9 @@ export function isLowPowerDesktop(): boolean {
     deviceMemory?: number;
     connection?: { saveData?: boolean };
   };
-  const lowThreads = (nav.hardwareConcurrency ?? 8) <= 4;
-  const lowMemory = (nav.deviceMemory ?? 8) <= 4;
+  // Slightly conservative thresholds so older office laptops/desktops get relief.
+  const lowThreads = (nav.hardwareConcurrency ?? 8) <= 6;
+  const lowMemory = (nav.deviceMemory ?? 8) <= 8;
   const saveData = Boolean(nav.connection?.saveData);
   return lowThreads || lowMemory || saveData;
 }

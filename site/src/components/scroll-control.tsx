@@ -44,6 +44,7 @@ export function SmoothScrollProvider({
   children: React.ReactNode;
 }) {
   const lenisRef = useRef<Lenis | null>(null);
+  const liteFxRef = useRef(false);
 
   const scrollToTop = useCallback(() => {
     if (typeof window === "undefined") return;
@@ -66,10 +67,43 @@ export function SmoothScrollProvider({
     window.setTimeout(finishScrollToTop, 900);
   }, []);
 
+  // Apply a global low-power class so CSS can cheapen expensive effects.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const root = document.documentElement;
+    const applyLite = (enabled: boolean) => {
+      liteFxRef.current = enabled;
+      root.classList.toggle("lite-effects", enabled);
+    };
+
+    if (shouldUseLiteEffects()) {
+      applyLite(true);
+      return;
+    }
+
+    // Quick runtime sanity check for older desktops:
+    // if initial frame time is consistently poor, force lite mode.
+    let frames = 0;
+    let start = performance.now();
+    let raf = 0;
+    const sample = (t: number) => {
+      frames += 1;
+      if (frames < 45) {
+        raf = requestAnimationFrame(sample);
+        return;
+      }
+      const avgMs = (t - start) / frames;
+      // ~45 FPS or lower during initial motion -> use lite effects
+      applyLite(avgMs > 22);
+    };
+    raf = requestAnimationFrame(sample);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    if (shouldUseLiteEffects()) return;
+    if (shouldUseLiteEffects() || liteFxRef.current) return;
 
     gsap.registerPlugin(ScrollTrigger);
 

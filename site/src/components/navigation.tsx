@@ -1,7 +1,7 @@
 "use client";
 
 import { useScrollToTop } from "@/components/scroll-control";
-import { shouldUseLightweightMotion } from "@/lib/mobile-performance";
+import { shouldUseLightweightMotion, shouldUseLiteEffects } from "@/lib/mobile-performance";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -37,6 +37,7 @@ function viewportHeight(): number {
 
 export function Navigation({ className }: { className?: string }) {
   const scrollToTop = useScrollToTop();
+  const liteFx = shouldUseLiteEffects();
   const [activeId, setActiveId] = useState<string>("top");
   /** Prevents scroll-spy from overwriting the tab you just tapped while the page scrolls (esp. mobile). */
   const navLockRef = useRef<{ id: string; until: number } | null>(null);
@@ -152,7 +153,11 @@ export function Navigation({ className }: { className?: string }) {
       )}
     >
       <nav
-        className="scrollbar-none flex max-w-[min(100%,42rem)] items-center gap-0.5 overflow-x-auto rounded-full border border-cyan-400/25 bg-white/[0.06] px-1.5 py-1.5 shadow-[0_0_40px_-8px_rgba(34,211,238,0.35),0_8px_32px_rgba(0,0,0,0.5)] backdrop-blur-2xl sm:max-w-none sm:gap-1 sm:px-2 sm:py-2"
+        className={`scrollbar-none flex max-w-[min(100%,42rem)] items-center gap-0.5 overflow-x-auto rounded-full border border-cyan-400/25 bg-white/[0.06] px-1.5 py-1.5 sm:max-w-none sm:gap-1 sm:px-2 sm:py-2 ${
+          liteFx
+            ? "shadow-[0_0_16px_-10px_rgba(34,211,238,0.25),0_6px_20px_rgba(0,0,0,0.35)] backdrop-blur-sm"
+            : "shadow-[0_0_40px_-8px_rgba(34,211,238,0.35),0_8px_32px_rgba(0,0,0,0.5)] backdrop-blur-2xl"
+        }`}
         aria-label="Primary"
       >
         <button
