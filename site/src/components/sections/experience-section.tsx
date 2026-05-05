@@ -2,10 +2,12 @@
 
 import { BorderBeam } from "@/components/ui/border-beam";
 import { profile } from "@/content/profile";
+import { shouldUseLiteEffects } from "@/lib/mobile-performance";
 import { motion } from "framer-motion";
 import { Building2 } from "lucide-react";
 
 export function ExperienceSection() {
+  const liteFx = shouldUseLiteEffects();
   return (
     <section
       id="experience"
@@ -39,7 +41,11 @@ export function ExperienceSection() {
                 delay: i * 0.05,
                 ease: [0.22, 1, 0.36, 1],
               }}
-              className="group relative overflow-hidden rounded-2xl border border-cyan-400/20 bg-white/[0.04] p-8 shadow-[0_0_60px_-20px_rgba(34,211,238,0.25),0_24px_80px_rgba(0,0,0,0.45)] backdrop-blur-2xl md:rounded-3xl md:p-10"
+              className={`group relative overflow-hidden rounded-2xl border border-cyan-400/20 bg-white/[0.04] p-8 md:rounded-3xl md:p-10 ${
+                liteFx
+                  ? "shadow-[0_0_28px_-16px_rgba(34,211,238,0.2),0_10px_28px_rgba(0,0,0,0.35)] backdrop-blur-sm"
+                  : "shadow-[0_0_60px_-20px_rgba(34,211,238,0.25),0_24px_80px_rgba(0,0,0,0.45)] backdrop-blur-2xl"
+              }`}
             >
               <div
                 className="pointer-events-none absolute inset-0 rounded-[inherit] opacity-80"
@@ -59,7 +65,7 @@ export function ExperienceSection() {
                   padding: 1,
                 }}
               />
-              <BorderBeam duration={14 + i * 2} />
+              {!liteFx && <BorderBeam duration={14 + i * 2} />}
               <div className="relative z-10">
                 <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                   <div>
@@ -102,7 +108,11 @@ export function ExperienceSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="mt-12 rounded-2xl border border-dashed border-cyan-400/25 bg-white/[0.03] px-6 py-8 shadow-[0_0_40px_-15px_rgba(167,139,250,0.15)] backdrop-blur-xl md:px-8"
+          className={`mt-12 rounded-2xl border border-dashed border-cyan-400/25 bg-white/[0.03] px-6 py-8 md:px-8 ${
+            liteFx
+              ? "shadow-[0_0_18px_-10px_rgba(167,139,250,0.12)] backdrop-blur-sm"
+              : "shadow-[0_0_40px_-15px_rgba(167,139,250,0.15)] backdrop-blur-xl"
+          }`}
         >
           <p className="text-xs font-medium uppercase tracking-wider text-cyan-200/50">
             Earlier roles

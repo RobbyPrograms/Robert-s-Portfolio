@@ -5,7 +5,7 @@ import { GradientText } from "@/components/ui/gradient-text";
 import { GridPattern } from "@/components/ui/grid-pattern";
 import { Spotlight } from "@/components/ui/spotlight";
 import { profile } from "@/content/profile";
-import { shouldUseLightweightMotion } from "@/lib/mobile-performance";
+import { shouldUseLiteEffects } from "@/lib/mobile-performance";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { motion, useReducedMotion } from "framer-motion";
@@ -21,7 +21,7 @@ export function HeroSection() {
   useLayoutEffect(() => {
     if (reduceMotion) return;
     // Pinned hero + blur scrub tanks mobile compositors; keep native scroll path.
-    if (shouldUseLightweightMotion()) return;
+    if (shouldUseLiteEffects()) return;
 
     gsap.registerPlugin(ScrollTrigger);
     const section = sectionRef.current;

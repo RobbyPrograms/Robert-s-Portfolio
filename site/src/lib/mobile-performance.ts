@@ -6,3 +6,22 @@ export function shouldUseLightweightMotion(): boolean {
     window.matchMedia("(pointer: coarse)").matches
   );
 }
+
+/** Heuristic for older/low-power desktops and laptops. */
+export function isLowPowerDesktop(): boolean {
+  if (typeof window === "undefined") return false;
+  const nav = window.navigator as Navigator & {
+    deviceMemory?: number;
+    connection?: { saveData?: boolean };
+  };
+  const lowThreads = (nav.hardwareConcurrency ?? 8) <= 4;
+  const lowMemory = (nav.deviceMemory ?? 8) <= 4;
+  const saveData = Boolean(nav.connection?.saveData);
+  return lowThreads || lowMemory || saveData;
+}
+
+/** Unified gate for expensive visual effects. */
+export function shouldUseLiteEffects(): boolean {
+  if (typeof window === "undefined") return false;
+  return shouldUseLightweightMotion() || isLowPowerDesktop();
+}
