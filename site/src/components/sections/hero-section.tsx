@@ -17,6 +17,7 @@ export function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const layerRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
+  const liteFx = shouldUseLiteEffects();
 
   useLayoutEffect(() => {
     if (reduceMotion) return;
@@ -71,7 +72,13 @@ export function HeroSection() {
             className="relative z-10 flex min-h-[100svh] flex-1 flex-col justify-center px-4 pb-[max(1.75rem,env(safe-area-inset-bottom))] pt-[calc(5.25rem+env(safe-area-inset-top))] sm:px-8 md:px-12 lg:px-16"
           >
             <div className="mx-auto w-full max-w-5xl">
-              <div className="relative overflow-hidden rounded-2xl border border-cyan-400/25 bg-white/[0.05] p-6 shadow-[0_0_80px_-20px_rgba(34,211,238,0.5),0_25px_80px_-30px_rgba(232,121,249,0.25)] backdrop-blur-md sm:rounded-3xl sm:p-8 md:backdrop-blur-2xl md:p-10">
+              <div
+                className={`relative overflow-hidden rounded-2xl border border-cyan-400/25 bg-white/[0.05] p-6 sm:rounded-3xl sm:p-8 md:p-10 ${
+                  liteFx
+                    ? "shadow-[0_0_26px_-16px_rgba(34,211,238,0.22),0_10px_28px_rgba(0,0,0,0.35)] backdrop-blur-sm"
+                    : "shadow-[0_0_80px_-20px_rgba(34,211,238,0.5),0_25px_80px_-30px_rgba(232,121,249,0.25)] backdrop-blur-md md:backdrop-blur-2xl"
+                }`}
+              >
                 <div
                   className="pointer-events-none absolute inset-0 rounded-[inherit] opacity-90"
                   style={{
@@ -148,13 +155,21 @@ export function HeroSection() {
                   >
                     <Link
                       href="#experience"
-                      className="inline-flex min-h-[48px] items-center justify-center rounded-full bg-gradient-to-r from-cyan-400 via-cyan-300 to-fuchsia-400 px-8 py-3.5 text-sm font-semibold text-[#0a0a0c] shadow-[0_0_32px_rgba(34,211,238,0.45)] transition-transform hover:scale-[1.02] hover:shadow-[0_0_48px_rgba(34,211,238,0.55)] active:scale-[0.98]"
+                      className={`inline-flex min-h-[48px] items-center justify-center rounded-full bg-gradient-to-r from-cyan-400 via-cyan-300 to-fuchsia-400 px-8 py-3.5 text-sm font-semibold text-[#0a0a0c] transition-transform active:scale-[0.98] ${
+                        liteFx
+                          ? "shadow-[0_0_14px_rgba(34,211,238,0.35)]"
+                          : "shadow-[0_0_32px_rgba(34,211,238,0.45)] hover:scale-[1.02] hover:shadow-[0_0_48px_rgba(34,211,238,0.55)]"
+                      }`}
                     >
                       View experience
                     </Link>
                     <Link
                       href="#contact"
-                      className="inline-flex min-h-[48px] items-center justify-center rounded-full border border-cyan-400/35 bg-white/[0.06] px-8 py-3.5 text-sm font-medium text-cyan-50 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-sm transition-colors hover:border-fuchsia-400/45 hover:bg-white/[0.1] hover:text-white md:backdrop-blur-md"
+                      className={`inline-flex min-h-[48px] items-center justify-center rounded-full border border-cyan-400/35 bg-white/[0.06] px-8 py-3.5 text-sm font-medium text-cyan-50 transition-colors ${
+                        liteFx
+                          ? "shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-none"
+                          : "shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-sm hover:border-fuchsia-400/45 hover:bg-white/[0.1] hover:text-white md:backdrop-blur-md"
+                      }`}
                     >
                       Get in touch
                     </Link>

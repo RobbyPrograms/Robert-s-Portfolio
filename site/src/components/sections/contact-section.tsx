@@ -1,11 +1,13 @@
 "use client";
 
 import { profile } from "@/content/profile";
+import { shouldUseLiteEffects } from "@/lib/mobile-performance";
 import { motion } from "framer-motion";
 import { Mail, Phone } from "lucide-react";
 import Link from "next/link";
 
 export function ContactSection() {
+  const liteFx = shouldUseLiteEffects();
   return (
     <section
       id="contact"
@@ -18,7 +20,11 @@ export function ContactSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="relative overflow-hidden rounded-3xl border border-cyan-400/25 bg-white/[0.04] p-10 text-center shadow-[0_0_80px_-25px_rgba(34,211,238,0.35),0_32px_100px_rgba(0,0,0,0.5)] backdrop-blur-2xl md:rounded-[2rem] md:p-16"
+          className={`relative overflow-hidden rounded-3xl border border-cyan-400/25 bg-white/[0.04] p-10 text-center md:rounded-[2rem] md:p-16 ${
+            liteFx
+              ? "shadow-[0_0_24px_-14px_rgba(34,211,238,0.2),0_10px_32px_rgba(0,0,0,0.35)] backdrop-blur-sm"
+              : "shadow-[0_0_80px_-25px_rgba(34,211,238,0.35),0_32px_100px_rgba(0,0,0,0.5)] backdrop-blur-2xl"
+          }`}
         >
           <div
             className="pointer-events-none absolute inset-0 rounded-[inherit] opacity-90"
@@ -52,14 +58,22 @@ export function ContactSection() {
             <div className="mt-12 flex flex-col items-center justify-center gap-5 sm:flex-row sm:gap-8">
               <Link
                 href={`mailto:${profile.email}`}
-                className="inline-flex min-h-[52px] w-full max-w-md items-center justify-center gap-3 rounded-full bg-gradient-to-r from-cyan-400 via-cyan-300 to-fuchsia-400 px-8 py-4 text-sm font-semibold text-[#0a0a0c] shadow-[0_0_36px_rgba(34,211,238,0.45)] transition-transform hover:scale-[1.02] hover:shadow-[0_0_48px_rgba(34,211,238,0.55)] sm:w-auto"
+                className={`inline-flex min-h-[52px] w-full max-w-md items-center justify-center gap-3 rounded-full bg-gradient-to-r from-cyan-400 via-cyan-300 to-fuchsia-400 px-8 py-4 text-sm font-semibold text-[#0a0a0c] transition-transform sm:w-auto ${
+                  liteFx
+                    ? "shadow-[0_0_14px_rgba(34,211,238,0.3)]"
+                    : "shadow-[0_0_36px_rgba(34,211,238,0.45)] hover:scale-[1.02] hover:shadow-[0_0_48px_rgba(34,211,238,0.55)]"
+                }`}
               >
                 <Mail className="h-4 w-4 shrink-0" aria-hidden />
                 <span className="truncate">{profile.email}</span>
               </Link>
               <a
                 href={`tel:${profile.phone.replace(/\D/g, "")}`}
-                className="inline-flex min-h-[52px] items-center justify-center gap-3 rounded-full border border-cyan-400/35 bg-white/[0.06] px-8 py-4 text-sm font-medium text-cyan-50 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-md transition-colors hover:border-fuchsia-400/40 hover:bg-white/[0.1] hover:text-white"
+                className={`inline-flex min-h-[52px] items-center justify-center gap-3 rounded-full border border-cyan-400/35 bg-white/[0.06] px-8 py-4 text-sm font-medium text-cyan-50 transition-colors ${
+                  liteFx
+                    ? "shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-none"
+                    : "shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-md hover:border-fuchsia-400/40 hover:bg-white/[0.1] hover:text-white"
+                }`}
               >
                 <Phone
                   className="h-4 w-4 shrink-0 text-cyan-300 drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]"

@@ -1,12 +1,13 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { shouldUseLiteEffects } from "@/lib/mobile-performance";
 import { motion } from "framer-motion";
 
 /** Static layers only — no continuous JS animation (mobile / low-power). */
-function AuroraStatic() {
+function AuroraStatic({ className = "" }: { className?: string }) {
   return (
-    <div className="pointer-events-none absolute inset-0 md:hidden">
+    <div className={`pointer-events-none absolute inset-0 ${className}`}>
       <div className="absolute -left-[20%] top-[-10%] h-[75vh] w-[75vw] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(34,211,238,0.38)_0%,transparent_62%)] blur-[80px]" />
       <div className="absolute -right-[15%] top-[15%] h-[70vh] w-[70vw] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(232,121,249,0.3)_0%,transparent_62%)] blur-[80px]" />
       <div className="absolute bottom-[-5%] left-[20%] h-[55vh] w-[55vw] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(167,139,250,0.22)_0%,transparent_68%)] blur-[70px]" />
@@ -58,6 +59,7 @@ export function AuroraBackground({
   className?: string;
   children?: React.ReactNode;
 }) {
+  const liteFx = shouldUseLiteEffects();
   return (
     <div
       className={cn(
@@ -65,8 +67,8 @@ export function AuroraBackground({
         className,
       )}
     >
-      <AuroraStatic />
-      <AuroraAnimated />
+      {liteFx ? <AuroraStatic /> : <AuroraStatic className="md:hidden" />}
+      {!liteFx && <AuroraAnimated />}
       <div className="relative isolate">{children}</div>
     </div>
   );
